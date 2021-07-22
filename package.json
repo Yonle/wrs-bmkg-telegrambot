@@ -1,18 +1,27 @@
 {
   "name": "wrs-bmkg-telegram",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bot tidak resmi WRS-BMKG yang bekerja untuk menerima peringatan gempa bumi di Indonesia.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Yonle <yonle@protonmail.com>",
+  "license": "MIT",
   "dependencies": {
     "dotenv": "^10.0.0",
     "miniget": "^4.2.1",
     "slimbot": "^5.1.0",
     "wrs-bmkg": "^1.0.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yonle/wrs-bmkg-telegrambot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Yonle/wrs-bmkg-telegrambot/issues"
+  },
+  "homepage": "https://github.com/Yonle/wrs-bmkg-telegrambot#readme"
 }
