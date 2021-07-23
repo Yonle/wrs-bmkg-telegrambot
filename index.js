@@ -19,7 +19,7 @@ bot.on("message", async (message) => {
       parse_mode: "Markdown",
     }
   );
-  let text = "*⚠️Gempa Realtime*";
+  let text = "*ℹ️Informasi Gempa Bumi Terkini*";
   text += `\nWaktu: ${new Date(
     wrs.lastRealtimeQL.properties.time
   ).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })}`;
@@ -27,10 +27,12 @@ bot.on("message", async (message) => {
   text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus: ${wrs.lastRealtimeQL.properties.status}`;
   text += `\nKedalaman: ${wrs.lastRealtimeQL.properties.depth} KM`;
-  let locationMessage = await bot.sendLocation(
+  let locationMessage = await bot.sendVenue(
     message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
-    wrs.lastRealtimeQL.geometry.coordinates[0]
+    wrs.lastRealtimeQL.geometry.coordinates[0],
+    "Lokasi Gempa Bumi Terkini",
+    wrs.lastRealtimeQL.properties.place
   );
   await bot.sendMessage(message.chat.id, text, {
     parse_mode: "Markdown",
@@ -39,7 +41,7 @@ bot.on("message", async (message) => {
 });
 
 wrs.on("Gempabumi", (msg) => {
-  if (wrs.recvWarn !== 2) return wrs.recvWarn++
+  if (wrs.recvWarn !== 2) return wrs.recvWarn++;
   let text = `ℹ️*${msg.subject}*`;
   text += `\n\n${msg.description}\n\n${msg.headline}`;
   subscriber.forEach(async (id) => {
@@ -55,8 +57,8 @@ wrs.on("Gempabumi", (msg) => {
 });
 
 wrs.on("realtime", (msg) => {
-  if (wrs.recvWarn !== 2) return wrs.recvWarn++
-  let text = "*ℹ️Informasi Gempa*";
+  if (wrs.recvWarn !== 2) return wrs.recvWarn++;
+  let text = "*ℹ️Informasi Gempa Bumi Terkini*";
   text += `\nWaktu: ${new Date(msg.properties.time).toLocaleString("en-US", {
     timeZone: "Asia/Jakarta",
   })}`;
@@ -66,15 +68,12 @@ wrs.on("realtime", (msg) => {
   text += `\nKedalaman: ${msg.properties.depth} KM`;
 
   subscriber.forEach(async (id) => {
-    await bot.sendMessage(
-      id,
-      "*⚠️Mohon Perhatian. Baru saja terjadi gempa bumi.*",
-      { parse_mode: "Markdown" }
-    );
-    let locationMessage = await bot.sendLocation(
+    let locationMessage = await bot.sendVenue(
       id,
       msg.geometry.coordinates[1],
-      msg.geometry.coordinates[0]
+      msg.geometry.coordinates[0],
+      "Lokasi Gempa Bumi Terkini",
+      wrs.lastRealtimeQL.properties.place
     );
     await bot.sendMessage(id, text, {
       parse_mode: "Markdown",
@@ -86,4 +85,4 @@ wrs.on("realtime", (msg) => {
 wrs.startPolling();
 bot.startPolling();
 
-process.on('unhandledRejection', console.error);
+process.on("unhandledRejection", console.error);
