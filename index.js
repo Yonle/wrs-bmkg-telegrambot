@@ -85,3 +85,5 @@ wrs.on("realtime", (msg) => {
 
 wrs.startPolling();
 bot.startPolling();
+
+process.on('unhandledRejection', console.error);
