@@ -6,7 +6,7 @@ const wrs = require("wrs-bmkg")();
 wrs.recvWarn = 0;
 require("dotenv").config();
 const bot = new slimbot(process.env.BOT_TOKEN);
-const subscriber = [-1001437200107];
+const subscriber = [];
 
 bot.on("message", async (message) => {
   if (!message.text || !message.text.startsWith("/start")) return;
