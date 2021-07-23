@@ -26,7 +26,7 @@ bot.on("message", async (message) => {
   text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag} M`;
   text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus: ${wrs.lastRealtimeQL.properties.status}`;
-  text += `\nKedalaman: ${wrs.lastRealtimeQL.properties.depth} m`;
+  text += `\nKedalaman: ${wrs.lastRealtimeQL.properties.depth} KM`;
   let locationMessage = await bot.sendLocation(
     message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -63,7 +63,7 @@ wrs.on("realtime", (msg) => {
   text += `\nMagnitude: ${msg.properties.mag} M`;
   text += `\nFase: ${msg.properties.fase}`;
   text += `\nStatus: ${msg.properties.status}`;
-  text += `\nKedalaman: ${msg.properties.depth} m`;
+  text += `\nKedalaman: ${msg.properties.depth} KM`;
 
   subscriber.forEach(async (id) => {
     await bot.sendMessage(
