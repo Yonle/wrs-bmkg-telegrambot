@@ -23,7 +23,7 @@ bot.on("message", async (message) => {
   text += `\nWaktu: ${new Date(
     wrs.lastRealtimeQL.properties.time
   ).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })}`;
-  text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag) / 1000} M`;
+  text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag} M`;
   text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus: ${wrs.lastRealtimeQL.properties.status}`;
   text += `\nKedalaman: ${wrs.lastRealtimeQL.properties.depth} m`;
