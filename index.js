@@ -3,6 +3,7 @@ const slimbot = require("slimbot");
 const miniget = require("miniget");
 const wrs = require("wrs-bmkg")();
 
+wrs.recvWarn = 0;
 require("dotenv").config();
 const bot = new slimbot(process.env.BOT_TOKEN);
 const subscriber = [-1001437200107];
@@ -22,10 +23,10 @@ bot.on("message", async (message) => {
   text += `\nWaktu: ${new Date(
     wrs.lastRealtimeQL.properties.time
   ).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })}`;
-  text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag}`;
+  text += `\nMagnitude: ${(Number(wrs.lastRealtimeQL.properties.mag) / 1000).toFixed(1)} M`;
   text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus: ${wrs.lastRealtimeQL.properties.status}`;
-  text += `\nKedalaman: ${wrs.lastRealtimeQL.properties.depth}m`;
+  text += `\nKedalaman: ${(Number(wrs.lastRealtimeQL.properties.depth) / 1000).toFixed(1)} KM`;
   let locationMessage = await bot.sendLocation(
     message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -38,6 +39,7 @@ bot.on("message", async (message) => {
 });
 
 wrs.on("Gempabumi", (msg) => {
+  if (wrs.recvWarn !== 2) return wrs.recvWarn++
   let text = `ℹ️*${msg.subject}*`;
   text += `\n\n${msg.description}\n\n${msg.headline}`;
   subscriber.forEach(async (id) => {
@@ -53,14 +55,15 @@ wrs.on("Gempabumi", (msg) => {
 });
 
 wrs.on("realtime", (msg) => {
+  if (wrs.recvWarn !== 2) return wrs.recvWarn++
   let text = "*ℹ️Informasi Gempa*";
   text += `\nWaktu: ${new Date(msg.properties.time).toLocaleString("en-US", {
     timeZone: "Asia/Jakarta",
   })}`;
-  text += `\nMagnitude: ${msg.properties.mag}`;
+  text += `\nMagnitude: ${(Number(msg.properties.mag) / 1000).toFixed(1)} M`;
   text += `\nFase: ${msg.properties.fase}`;
   text += `\nStatus: ${msg.properties.status}`;
-  text += `\nKedalaman: ${msg.properties.depth}m`;
+  text += `\nKedalaman: ${(Number(msg.properties.depth) / 1000).toFixed(1)} KM`;
 
   subscriber.forEach(async (id) => {
     await bot.sendMessage(
