@@ -23,10 +23,10 @@ bot.on("message", async (message) => {
   text += `\nWaktu: ${new Date(
     wrs.lastRealtimeQL.properties.time
   ).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })}`;
-  text += `\nMagnitude: ${(Number(wrs.lastRealtimeQL.properties.mag) / 1000).toFixed(1)} M`;
+  text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag) / 1000} M`;
   text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus: ${wrs.lastRealtimeQL.properties.status}`;
-  text += `\nKedalaman: ${(Number(wrs.lastRealtimeQL.properties.depth) / 1000).toFixed(1)} KM`;
+  text += `\nKedalaman: ${wrs.lastRealtimeQL.properties.depth} m`;
   let locationMessage = await bot.sendLocation(
     message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -60,10 +60,10 @@ wrs.on("realtime", (msg) => {
   text += `\nWaktu: ${new Date(msg.properties.time).toLocaleString("en-US", {
     timeZone: "Asia/Jakarta",
   })}`;
-  text += `\nMagnitude: ${(Number(msg.properties.mag) / 1000).toFixed(1)} M`;
+  text += `\nMagnitude: ${msg.properties.mag} M`;
   text += `\nFase: ${msg.properties.fase}`;
   text += `\nStatus: ${msg.properties.status}`;
-  text += `\nKedalaman: ${(Number(msg.properties.depth) / 1000).toFixed(1)} KM`;
+  text += `\nKedalaman: ${msg.properties.depth} m`;
 
   subscriber.forEach(async (id) => {
     await bot.sendMessage(
