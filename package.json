@@ -15,7 +15,6 @@
     "slimbot": "^5.1.0",
     "wrs-bmkg": "^1.0.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Yonle/wrs-bmkg-telegrambot.git"

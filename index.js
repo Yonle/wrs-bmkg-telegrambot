@@ -13,7 +13,7 @@ bot.on("message", async (message) => {
   if (!subscriber.includes(message.chat.id)) subscriber.push(message.chat.id);
   await bot.sendPhoto(
     message.chat.id,
-    `https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`,
+    await miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`).text(),
     {
       caption: `*ℹ️${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n⚠️${wrs.lastAlert.info.instruction}`,
       parse_mode: "Markdown",
@@ -21,12 +21,12 @@ bot.on("message", async (message) => {
   );
   let text = "*ℹ️Informasi Gempa Bumi Terkini*";
   text += `\nWaktu: ${new Date(
-    wrs.lastRealtimeQL.properties.time
+    rs.lastRealtimeQL.properties.time
   ).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })}`;
   text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag} M`;
   text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus: ${wrs.lastRealtimeQL.properties.status}`;
-  text += `\nKedalaman: ${wrs.lastRealtimeQL.properties.depth} KM`;
+  text += `\nKedalaman: ${Math.floor(wrs.lastRealtimeQL.properties.depth)} KM`;
   let locationMessage = await bot.sendVenue(
     message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -47,7 +47,7 @@ wrs.on("Gempabumi", (msg) => {
   subscriber.forEach(async (id) => {
     await bot.sendPhoto(
       id,
-      `https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`,
+      await miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`).text(),
       {
         caption: `*ℹ️${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\n⚠️${msg.instruction}`,
         parse_mode: "Markdown",
@@ -65,7 +65,7 @@ wrs.on("realtime", (msg) => {
   text += `\nMagnitude: ${msg.properties.mag} M`;
   text += `\nFase: ${msg.properties.fase}`;
   text += `\nStatus: ${msg.properties.status}`;
-  text += `\nKedalaman: ${msg.properties.depth} KM`;
+  text += `\nKedalaman: ${Math.floor(msg.properties.depth)} KM`;
 
   subscriber.forEach(async (id) => {
     let locationMessage = await bot.sendVenue(
