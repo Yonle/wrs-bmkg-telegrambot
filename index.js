@@ -13,7 +13,7 @@ bot.on("message", async (message) => {
   if (!subscriber.includes(message.chat.id)) subscriber.push(message.chat.id);
   await bot.sendPhoto(
     message.chat.id,
-    await miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`).text(),
+    miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`),
     {
       caption: `*ℹ️${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n⚠️${wrs.lastAlert.info.instruction}`,
       parse_mode: "Markdown",
@@ -47,7 +47,7 @@ wrs.on("Gempabumi", (msg) => {
   subscriber.forEach(async (id) => {
     await bot.sendPhoto(
       id,
-      await miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`).text(),
+      miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`),
       {
         caption: `*ℹ️${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\n⚠️${msg.instruction}`,
         parse_mode: "Markdown",
