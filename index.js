@@ -13,7 +13,7 @@ bot.on("message", async (message) => {
   if (!subscriber.includes(message.chat.id)) subscriber.push(message.chat.id);
   await bot.sendPhoto(
     message.chat.id,
-    miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`),
+    `https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`,
     {
       caption: `*ℹ️${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n⚠️${wrs.lastAlert.info.instruction}`,
       parse_mode: "Markdown",
@@ -21,7 +21,7 @@ bot.on("message", async (message) => {
   );
   let text = "*ℹ️Informasi Gempa Bumi Terkini*";
   text += `\nWaktu: ${new Date(
-    rs.lastRealtimeQL.properties.time
+    wrs.lastRealtimeQL.properties.time
   ).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })}`;
   text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag} M`;
   text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
@@ -47,7 +47,7 @@ wrs.on("Gempabumi", (msg) => {
   subscriber.forEach(async (id) => {
     await bot.sendPhoto(
       id,
-      miniget(`https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`),
+      `https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`,
       {
         caption: `*ℹ️${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\n⚠️${msg.instruction}`,
         parse_mode: "Markdown",
@@ -83,6 +83,8 @@ wrs.on("realtime", (msg) => {
 });
 
 wrs.startPolling();
-bot.startPolling();
+
+console.log("Bot is starting now. You may sent a message than waiting a ready message appear.");
+bot.startPolling().then(() => console.log("I'm ready to receive WRS-BMKG Warnings."));
 
 process.on("unhandledRejection", console.error);
