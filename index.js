@@ -6,7 +6,7 @@ const wrs = require("wrs-bmkg")();
 wrs.recvWarn = 0;
 require("dotenv").config();
 const bot = new grammy.Bot(process.env.BOT_TOKEN);
-const subscriber = [651345999];
+const subscriber = [];
 
 bot.command("start", async ctx => {
   if (!subscriber.includes(ctx.message.chat.id)) subscriber.push(ctx.message.chat.id);
