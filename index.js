@@ -17,7 +17,7 @@ bot.command("start", async (ctx) => {
       get(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`)
     ),
     {
-      caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n⚠️${wrs.lastAlert.info.instruction}`,
+      caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n${wrs.lastAlert.info.instruction}`,
       parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
