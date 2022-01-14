@@ -1,90 +1,103 @@
 const { inspect } = require("util");
-const slimbot = require("slimbot");
-const miniget = require("miniget");
+const grammy = require("grammy");
+const get = require("miniget");
 const wrs = require("wrs-bmkg")();
 
 wrs.recvWarn = 0;
 require("dotenv").config();
-const bot = new slimbot(process.env.BOT_TOKEN);
-const subscriber = [];
+const bot = new grammy.Bot(process.env.BOT_TOKEN);
+const subscriber = [651345999];
 
-bot.on("message", async (message) => {
-  if (!message.text || !message.text.startsWith("/start")) return;
-  if (!subscriber.includes(message.chat.id)) subscriber.push(message.chat.id);
-  await bot.sendPhoto(
-    message.chat.id,
-    `https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`,
+bot.command("start", async ctx => {
+  if (!subscriber.includes(ctx.message.chat.id)) subscriber.push(ctx.message.chat.id);
+  bot.api.sendChatAction(ctx.message.chat.id, "upload_photo");
+  await ctx.replyWithPhoto(new grammy.InputFile(
+    get(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`)),
     {
-      caption: `*ℹ️${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n⚠️${wrs.lastAlert.info.instruction}`,
+      caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n⚠️${wrs.lastAlert.info.instruction}`,
       parse_mode: "Markdown",
+      reply_markup: {
+        inline_keyboard: [[{
+          text: "Buka WRS-BMKG",
+	  url: "https://warning.bmkg.go.id"
+	}]]
+      }
     }
   );
-  let text = "*ℹ️Informasi Gempa Bumi Terkini*";
-  text += `\nWaktu: ${new Date(
+  let text = `*${wrs.lastRealtimeQL.properties.place}*\``
+  text += `\nWaktu     : ${new Date(
     wrs.lastRealtimeQL.properties.time
-  ).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })}`;
-  text += `\nMagnitude: ${wrs.lastRealtimeQL.properties.mag} M`;
-  text += `\nFase: ${wrs.lastRealtimeQL.properties.fase}`;
-  text += `\nStatus: ${wrs.lastRealtimeQL.properties.status}`;
-  text += `\nKedalaman: ${Math.floor(wrs.lastRealtimeQL.properties.depth)} KM`;
-  let locationMessage = await bot.sendVenue(
-    message.chat.id,
+  ).toLocaleTimeString("us", { timeZone: "Asia/Jakarta" })}`;
+  text += `\nMagnitude : ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(2)} M`;
+  text += `\nFase      : ${wrs.lastRealtimeQL.properties.fase}`;
+  text += `\nStatus    : ${wrs.lastRealtimeQL.properties.status}`;
+  text += `\nKedalaman : ${Math.floor(wrs.lastRealtimeQL.properties.depth)} KM\``;
+  let locationMessage = await bot.api.sendVenue(
+    ctx.message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
     wrs.lastRealtimeQL.geometry.coordinates[0],
-    "Lokasi Gempa Bumi Terkini",
-    wrs.lastRealtimeQL.properties.place
+    wrs.lastRealtimeQL.properties.place,
+    Number(wrs.lastRealtimeQL.properties.mag).toFixed(2) + " M, " + new Date(wrs.lastRealtimeQL.properties.mag).toLocaleDateString("id", { timeZone: "Asia/Jakarta" }) + " (WIB)"
   );
-  await bot.sendMessage(message.chat.id, text, {
+  await ctx.reply(text, {
     parse_mode: "Markdown",
-    reply_to_message_id: locationMessage.result.message_id,
+    reply_to_message_id: locationMessage.message_id,
   });
 });
 
 wrs.on("Gempabumi", (msg) => {
-  if (wrs.recvWarn !== 2) return wrs.recvWarn++;
-  let text = `ℹ️*${msg.subject}*`;
+  //if (wrs.recvWarn !== 2) return wrs.recvWarn++;
+  let text = `*${msg.subject}*`;
   text += `\n\n${msg.description}\n\n${msg.headline}`;
   subscriber.forEach(async (id) => {
-    await bot.sendPhoto(
+    await bot.api.sendPhoto(
       id,
-      `https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`,
+      new grammy.InputFile(
+	      get(`https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`)
+	),
       {
-        caption: `*ℹ️${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\n⚠️${msg.instruction}`,
+        caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\n*${msg.instruction}*`,
         parse_mode: "Markdown",
+	reply_markup: {
+          inline_keyboard: [[{
+	    text: "Buka WRS-BMKG",
+            url: "https://warning.bmkg.go.id"
+          }]]
+        }
       }
     );
   });
 });
 
 wrs.on("realtime", (msg) => {
-  if (wrs.recvWarn !== 2) return wrs.recvWarn++;
-  let text = "*ℹ️Informasi Gempa Bumi Terkini*";
-  text += `\nWaktu: ${new Date(msg.properties.time).toLocaleString("en-US", {
+  //if (wrs.recvWarn !== 2) return wrs.recvWarn++;
+  let text = `*${wrs.lastRealtimeQL.properties.place}*\``
+  text += `\nTanggal   : ${new Date(msg.properties.time).toLocaleDateString("id", {
     timeZone: "Asia/Jakarta",
   })}`;
-  text += `\nMagnitude: ${msg.properties.mag} M`;
-  text += `\nFase: ${msg.properties.fase}`;
-  text += `\nStatus: ${msg.properties.status}`;
-  text += `\nKedalaman: ${Math.floor(msg.properties.depth)} KM`;
+  text += `\nMagnitude : ${Number(msg.properties.mag).toFixed(2)} M`;
+  text += `\nFase      : ${msg.properties.fase}`;
+  text += `\nStatus    : ${msg.properties.status}`;
+  text += `\nKedalaman : ${Math.floor(msg.properties.depth)} KM\``;
 
   subscriber.forEach(async (id) => {
-    let locationMessage = await bot.sendVenue(
+    let locationMessage = await bot.api.sendVenue(
       id,
       msg.geometry.coordinates[1],
       msg.geometry.coordinates[0],
-      "Lokasi Gempa Bumi Terkini",
-      wrs.lastRealtimeQL.properties.place
+      wrs.lastRealtimeQL.properties.place,
+      Number(msg.properties.mag).toFixed(2) + " M, " + new Date(msg.properties.time).toLocaleTimeString("us", { timeZone: "Asia/Jakarta" }) + " (WIB)"
     );
-    await bot.sendMessage(id, text, {
+    await bot.api.sendMessage(id, text, {
       parse_mode: "Markdown",
-      reply_to_message_id: locationMessage.result.message_id,
+      reply_to_message_id: locationMessage.message_id,
     });
   });
 });
 
 wrs.startPolling();
 
-console.log("Bot is starting now. You may sent a message than waiting a ready message appear.");
-bot.startPolling().then(() => console.log("I'm ready to receive WRS-BMKG Warnings."));
-
+bot.start()
+bot.api.getMe().then(({ username }) => console.log(`Berhasil masuk sebagai @${username}`));
+bot.catch(e => console.error(e));
 process.on("unhandledRejection", console.error);

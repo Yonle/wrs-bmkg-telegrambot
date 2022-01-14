@@ -11,8 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^10.0.0",
+    "grammy": "^1.6.1",
     "miniget": "^4.2.1",
-    "slimbot": "^5.1.0",
     "wrs-bmkg": "^1.0.0"
   },
   "repository": {
