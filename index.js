@@ -32,9 +32,9 @@ bot.command("start", async (ctx) => {
     }
   );
   let text = `*${wrs.lastRealtimeQL.properties.place}*\``;
-  text += `\nWaktu     : ${new Date(
+  text += `\nTanggal   : ${new Date(
     wrs.lastRealtimeQL.properties.time
-  ).toLocaleTimeString("us", { timeZone: "Asia/Jakarta" })}`;
+  ).toLocaleDateString("id", { timeZone: "Asia/Jakarta" })}`;
   text += `\nMagnitude : ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(
     2
   )} M`;
@@ -50,7 +50,7 @@ bot.command("start", async (ctx) => {
     wrs.lastRealtimeQL.properties.place,
     Number(wrs.lastRealtimeQL.properties.mag).toFixed(2) +
       " M, " +
-      new Date(wrs.lastRealtimeQL.properties.mag).toLocaleDateString("id", {
+      new Date(wrs.lastRealtimeQL.properties.time).toLocaleTimeString("us", {
         timeZone: "Asia/Jakarta",
       }) +
       " (WIB)"
