@@ -14,7 +14,7 @@ bot.command("start", async (ctx) => {
   bot.api.sendChatAction(ctx.message.chat.id, "upload_photo");
   await ctx.replyWithPhoto(
     new grammy.InputFile(
-      get(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`)
+      get(`https://bmkg-content-inatews.storage.googleapis.com/${wrs.lastAlert.info.shakemap}`)
     ),
     {
       caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n${wrs.lastAlert.info.instruction}`,
@@ -69,7 +69,7 @@ wrs.on("Gempabumi", (msg) => {
     await bot.api.sendPhoto(
       id,
       new grammy.InputFile(
-        get(`https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`)
+        get(`https://bmkg-content-inatews.storage.googleapis.com/${msg.shakemap}`)
       ),
       {
         caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\n*${msg.instruction}*`,
