@@ -46,7 +46,7 @@ bot.command("start", async ctx => {
 });
 
 wrs.on("Gempabumi", (msg) => {
-  //if (wrs.recvWarn !== 2) return wrs.recvWarn++;
+  if (wrs.recvWarn !== 2) return wrs.recvWarn++;
   let text = `*${msg.subject}*`;
   text += `\n\n${msg.description}\n\n${msg.headline}`;
   subscriber.forEach(async (id) => {
@@ -70,7 +70,7 @@ wrs.on("Gempabumi", (msg) => {
 });
 
 wrs.on("realtime", (msg) => {
-  //if (wrs.recvWarn !== 2) return wrs.recvWarn++;
+  if (wrs.recvWarn !== 2) return wrs.recvWarn++;
   let text = `*${wrs.lastRealtimeQL.properties.place}*\``
   text += `\nTanggal   : ${new Date(msg.properties.time).toLocaleDateString("id", {
     timeZone: "Asia/Jakarta",
