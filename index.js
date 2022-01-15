@@ -14,7 +14,9 @@ bot.command("start", async (ctx) => {
   bot.api.sendChatAction(ctx.message.chat.id, "upload_photo");
   await ctx.replyWithPhoto(
     new grammy.InputFile(
-      get(`https://bmkg-content-inatews.storage.googleapis.com/${wrs.lastAlert.info.shakemap}`)
+      get(
+        `https://bmkg-content-inatews.storage.googleapis.com/${wrs.lastAlert.info.shakemap}`
+      )
     ),
     {
       caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\n${wrs.lastAlert.info.instruction}`,
@@ -35,12 +37,23 @@ bot.command("start", async (ctx) => {
   text += `\nTanggal   : ${new Date(
     wrs.lastRealtimeQL.properties.time
   ).toLocaleDateString("id")}`;
-  text += `\nMagnitude : ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(2)} M`;
+  text += `\nWaktu     : ${new Date(
+    wrs.lastRealtimeQL.properties.time
+  ).toLocaleDateString("us", {
+    timeZone: "Asia/Jakarta",
+  })} (WIB)`;
+  text += `\nMagnitude : ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(
+    2
+  )} M`;
   text += `\nFase      : ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus    : ${wrs.lastRealtimeQL.properties.status}`;
   text += `\nKedalaman : ${Math.floor(
     wrs.lastRealtimeQL.properties.depth
   )} KM\``;
+  if (Number(wrs.lastRealtimeQL.properties.mag) >= 5)
+    text += "\n\n[!] Peringatan: Gempa berskala M >= 5";
+  else if (Number(wrs.lastRealtimeQL.properties.mag) >= 7)
+    text += "\n\n[!!!] Peringatan: Gempa berskala M >= 7";
   let locationMessage = await bot.api.sendVenue(
     ctx.message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -67,7 +80,9 @@ wrs.on("Gempabumi", (msg) => {
     await bot.api.sendPhoto(
       id,
       new grammy.InputFile(
-        get(`https://bmkg-content-inatews.storage.googleapis.com/${msg.shakemap}`)
+        get(
+          `https://bmkg-content-inatews.storage.googleapis.com/${msg.shakemap}`
+        )
       ),
       {
         caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\n*${msg.instruction}*`,
@@ -90,11 +105,23 @@ wrs.on("Gempabumi", (msg) => {
 wrs.on("realtime", (msg) => {
   if (wrs.recvWarn !== 2) return wrs.recvWarn++;
   let text = `*${wrs.lastRealtimeQL.properties.place}*\``;
-  text += `\nTanggal   : ${new Date(msg.properties.time).toLocaleDateString("id")}`;
+  text += `\nTanggal   : ${new Date(msg.properties.time).toLocaleDateString(
+    "id"
+  )}`;
+  text += `\nWaktu     : ${new Date(msg.properties.time).toLocaleDateString(
+    "us",
+    {
+      timeZone: "Asia/Jakarta",
+    }
+  )} (WIB)`;
   text += `\nMagnitude : ${Number(msg.properties.mag).toFixed(2)} M`;
   text += `\nFase      : ${msg.properties.fase}`;
   text += `\nStatus    : ${msg.properties.status}`;
   text += `\nKedalaman : ${Math.floor(msg.properties.depth)} KM\``;
+  if (Number(msg.properties.mag) >= 5)
+    text += "\n\n[!] Peringatan: Gempa berskala M >= 5";
+  else if (Number(msg.properties.mag) >= 7)
+    text += "\n\n[!!!] Peringatan: Gempa berskala M >= 7";
 
   subscriber.forEach(async (id) => {
     let locationMessage = await bot.api.sendVenue(
@@ -113,6 +140,15 @@ wrs.on("realtime", (msg) => {
       parse_mode: "Markdown",
       reply_to_message_id: locationMessage.message_id,
     });
+    if (Number(msg.properties.mag) >= 7)
+      ctx.reply(
+        "`" +
+          `
+    !!! PERINGATAN !!!
+    Gempa berskala M >= 7 SR. Gempa bisa saja berpotensi Tsunami. Masyarakat sekitar dihimbau untuk tetap waspada dan ikuti himbauan petugas
+    `,
+        { parse_mode: "Markdown" }
+      );
   });
 });
 
