@@ -34,10 +34,8 @@ bot.command("start", async (ctx) => {
   let text = `*${wrs.lastRealtimeQL.properties.place}*\``;
   text += `\nTanggal   : ${new Date(
     wrs.lastRealtimeQL.properties.time
-  ).toLocaleDateString("id", { timeZone: "Asia/Jakarta" })}`;
-  text += `\nMagnitude : ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(
-    2
-  )} M`;
+  ).toLocaleDateString("id")}`;
+  text += `\nMagnitude : ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(2)} M`;
   text += `\nFase      : ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus    : ${wrs.lastRealtimeQL.properties.status}`;
   text += `\nKedalaman : ${Math.floor(
@@ -92,12 +90,7 @@ wrs.on("Gempabumi", (msg) => {
 wrs.on("realtime", (msg) => {
   if (wrs.recvWarn !== 2) return wrs.recvWarn++;
   let text = `*${wrs.lastRealtimeQL.properties.place}*\``;
-  text += `\nTanggal   : ${new Date(msg.properties.time).toLocaleDateString(
-    "id",
-    {
-      timeZone: "Asia/Jakarta",
-    }
-  )}`;
+  text += `\nTanggal   : ${new Date(msg.properties.time).toLocaleDateString("id")}`;
   text += `\nMagnitude : ${Number(msg.properties.mag).toFixed(2)} M`;
   text += `\nFase      : ${msg.properties.fase}`;
   text += `\nStatus    : ${msg.properties.status}`;
