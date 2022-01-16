@@ -42,18 +42,18 @@ bot.command("start", async (ctx) => {
   ).toLocaleTimeString("us", {
     timeZone: "Asia/Jakarta",
   })} (WIB)`;
-  text += `\nMagnitude : ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(
+  text += `\nMagnitude : M ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(
     2
-  )} M`;
+  )}`;
   text += `\nFase      : ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus    : ${wrs.lastRealtimeQL.properties.status}`;
   text += `\nKedalaman : ${Math.floor(
     wrs.lastRealtimeQL.properties.depth
   )} KM\``;
   if (Number(wrs.lastRealtimeQL.properties.mag) >= 5)
-    text += "\n\n[!] Peringatan: Gempa berskala M >= 5";
+    text += "\n\n<!> Peringatan: Gempa berskala M >= 5";
   else if (Number(wrs.lastRealtimeQL.properties.mag) >= 7)
-    text += "\n\n[!!!] Peringatan: Gempa berskala M >= 7";
+    text += "\n\n<!!!> Peringatan: Gempa berskala M >= 7";
   let locationMessage = await bot.api.sendVenue(
     ctx.message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -113,14 +113,14 @@ wrs.on("realtime", (msg) => {
       timeZone: "Asia/Jakarta",
     }
   )} (WIB)`;
-  text += `\nMagnitude : ${Number(msg.properties.mag).toFixed(2)} M`;
+  text += `\nMagnitude : M ${Number(msg.properties.mag).toFixed(2)}`;
   text += `\nFase      : ${msg.properties.fase}`;
   text += `\nStatus    : ${msg.properties.status}`;
   text += `\nKedalaman : ${Math.floor(msg.properties.depth)} KM\``;
   if (Number(msg.properties.mag) >= 5)
-    text += "\n\n[!] Peringatan: Gempa berskala M >= 5";
+    text += "\n\n<!> Peringatan: Gempa berskala M >= 5";
   else if (Number(msg.properties.mag) >= 7)
-    text += "\n\n[!!!] Peringatan: Gempa berskala M >= 7";
+    text += "\n\n<!!!> Peringatan: Gempa berskala M >= 7";
 
   subscriber.forEach(async (id) => {
     let locationMessage = await bot.api.sendVenue(
