@@ -57,7 +57,7 @@ bot.command("start", async (ctx) => {
     wrs.lastRealtimeQL.geometry.coordinates[1],
     wrs.lastRealtimeQL.geometry.coordinates[0],
     wrs.lastRealtimeQL.properties.place,
-    Number("M"+ wrs.lastRealtimeQL.properties.mag).toFixed(1) +
+    "M" + Number(wrs.lastRealtimeQL.properties.mag).toFixed(1) +
       ", " +
       new Date(wrs.lastRealtimeQL.properties.time).toLocaleTimeString("us", {
         timeZone: "Asia/Jakarta",
