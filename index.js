@@ -42,9 +42,7 @@ bot.command("start", async (ctx) => {
   ).toLocaleTimeString("us", {
     timeZone: "Asia/Jakarta",
   })} (WIB)`;
-  text += `\nMagnitude : M ${Number(wrs.lastRealtimeQL.properties.mag).toFixed(
-    2
-  )}`;
+  text += `\nMagnitude : M${Number(wrs.lastRealtimeQL.properties.mag).toFixed(1)}`;
   text += `\nFase      : ${wrs.lastRealtimeQL.properties.fase}`;
   text += `\nStatus    : ${wrs.lastRealtimeQL.properties.status}`;
   text += `\nKedalaman : ${Math.floor(
@@ -59,8 +57,8 @@ bot.command("start", async (ctx) => {
     wrs.lastRealtimeQL.geometry.coordinates[1],
     wrs.lastRealtimeQL.geometry.coordinates[0],
     wrs.lastRealtimeQL.properties.place,
-    Number(wrs.lastRealtimeQL.properties.mag).toFixed(2) +
-      " M, " +
+    Number("M"+ wrs.lastRealtimeQL.properties.mag).toFixed(1) +
+      ", " +
       new Date(wrs.lastRealtimeQL.properties.time).toLocaleTimeString("us", {
         timeZone: "Asia/Jakarta",
       }) +
@@ -113,7 +111,7 @@ wrs.on("realtime", (msg) => {
       timeZone: "Asia/Jakarta",
     }
   )} (WIB)`;
-  text += `\nMagnitude : M ${Number(msg.properties.mag).toFixed(2)}`;
+  text += `\nMagnitude : M${Number(msg.properties.mag).toFixed(1)}`;
   text += `\nFase      : ${msg.properties.fase}`;
   text += `\nStatus    : ${msg.properties.status}`;
   text += `\nKedalaman : ${Math.floor(msg.properties.depth)} KM\``;
@@ -128,8 +126,8 @@ wrs.on("realtime", (msg) => {
       msg.geometry.coordinates[1],
       msg.geometry.coordinates[0],
       wrs.lastRealtimeQL.properties.place,
-      Number(msg.properties.mag).toFixed(2) +
-        " M, " +
+      "M" + Number(msg.properties.mag).toFixed(1) +
+        ", " +
         new Date(msg.properties.time).toLocaleTimeString("us", {
           timeZone: "Asia/Jakarta",
         }) +
@@ -139,15 +137,6 @@ wrs.on("realtime", (msg) => {
       parse_mode: "Markdown",
       reply_to_message_id: locationMessage.message_id,
     });
-    if (Number(msg.properties.mag) >= 7)
-      ctx.reply(
-        "`" +
-          `
-    !!! PERINGATAN !!!
-    Gempa berskala M >= 7 SR. Gempa bisa saja berpotensi Tsunami. Masyarakat sekitar dihimbau untuk tetap waspada dan ikuti himbauan petugas
-    `,
-        { parse_mode: "Markdown" }
-      );
   });
 });
 
