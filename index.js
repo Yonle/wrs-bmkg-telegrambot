@@ -140,6 +140,7 @@ wrs.on("realtime", (msg) => {
   });
 });
 
+wrs.on('error', _ => wrs.startPolling());
 wrs.startPolling();
 
 bot.start();
