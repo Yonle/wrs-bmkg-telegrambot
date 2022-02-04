@@ -19,7 +19,7 @@ bot.command("start", async (ctx) => {
       )
     ),
     {
-      caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.headline}\n\nGempa ini dirasakan di ${wrs.lastAlert.info.felt}.\n\n${wrs.lastAlert.info.area}\n\n${wrs.lastAlert.info.potential}\n\n${wrs.lastAlert.info.instruction}`,
+      caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.potential}\n\n${wrs.lastAlert.info.instruction}`,
       parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
@@ -72,7 +72,7 @@ bot.command("start", async (ctx) => {
 
 wrs.on("Gempabumi", (msg) => {
   if (wrs.recvWarn !== 2) return wrs.recvWarn++;
-  let text = `*${msg.subject}*\n\n${msg.description}\n\n${msg.headline}\n\nGempa ini dirasakan di ${msg.felt}.\n\n${msg.area}\n\n${msg.potential}\n\n${msg.instruction}`;
+  let text = `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`;
   subscriber.forEach(async (id) => {
     await bot.api.sendPhoto(
       id,
