@@ -74,7 +74,7 @@ bot.command("start", async (ctx) => {
 wrs.on("Gempabumi", (msg) => {
 	if (wrs.recvWarn !== 2) return wrs.recvWarn++;
 	let text = `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`;
-	subscribers.foreach(async (id) => {
+	subscriber.foreach(async (id) => {
 		await bot.api.sendMessage(
 			id, msg.headline
 		);
@@ -144,7 +144,10 @@ wrs.on("realtime", (msg) => {
 	});
 });
 
-wrs.on('error', _ => wrs.startPolling());
+wrs.on('error', err => {
+	console.error(err);
+	wrs.startPolling();
+});
 wrs.startPolling();
 
 bot.start();
