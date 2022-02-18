@@ -74,7 +74,7 @@ bot.command("start", async (ctx) => {
 wrs.on("Gempabumi", (msg) => {
 	if (wrs.recvWarn !== 2) return wrs.recvWarn++;
 	let text = `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`;
-	subscriber.foreach(async (id) => {
+	subscriber.forEach(async (id) => {
 		await bot.api.sendMessage(
 			id, msg.headline
 		);
