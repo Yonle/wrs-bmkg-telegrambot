@@ -8,7 +8,7 @@ require("dotenv").config();
 const bot = new grammy.Bot(process.env.BOT_TOKEN);
 const subscriber = [];
 
-async function sendWarning(msg, id, t = 3000) {
+async function sendWarning(id, msg, t = 3000) {
   try {
     await bot.api.sendPhoto(
       id,
@@ -18,7 +18,7 @@ async function sendWarning(msg, id, t = 3000) {
         )
       ),
       {
-        caption: text,
+        caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`,
         parse_mode: "Markdown",
         reply_markup: {
           inline_keyboard: [
@@ -86,7 +86,6 @@ bot.command("start", async (ctx) => {
 
 wrs.on("Gempabumi", (msg) => {
   if (wrs.recvWarn !== 2) return wrs.recvWarn++;
-  let text = `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`;
   subscriber.forEach(async (id) => {
     await bot.api.sendMessage(id, msg.headline);
   });
