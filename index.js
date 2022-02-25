@@ -8,12 +8,14 @@ require("dotenv").config();
 const bot = new grammy.Bot(process.env.BOT_TOKEN);
 const subscriber = [];
 
-function sendWarning(msg, id, t = 3000) {
-  bot.api
-    .sendPhoto(
+async function sendWarning(msg, id, t = 3000) {
+  try {
+    await bot.api.sendPhoto(
       id,
       new grammy.InputFile(
-        get(`https://data.bmkg.go.id/DataMKG/TEWS/${msg.shakemap}`)
+        get(
+          `https://bmkg-content-inatews.storage.googleapis.com/${msg.shakemap}`
+        )
       ),
       {
         caption: text,
@@ -29,11 +31,11 @@ function sendWarning(msg, id, t = 3000) {
           ],
         },
       }
-    )
-    .catch((e) => {
-      console.error(e);
-      setTimeout((_) => sendWarning(msg, id, t + 1000), t);
-    });
+    );
+  } catch (e) {
+    console.error(e);
+    setTimeout(async (_) => await sendWarning(msg, id, t + 1000), t);
+  }
 }
 
 bot.command("start", async (ctx) => {
@@ -41,25 +43,7 @@ bot.command("start", async (ctx) => {
     subscriber.push(ctx.message.chat.id);
   await ctx.reply(wrs.lastAlert.info.headline);
   bot.api.sendChatAction(ctx.message.chat.id, "upload_photo");
-  await ctx.replyWithPhoto(
-    new grammy.InputFile(
-      get(`https://data.bmkg.go.id/DataMKG/TEWS/${wrs.lastAlert.info.shakemap}`)
-    ),
-    {
-      caption: `*${wrs.lastAlert.info.subject}*\n\n${wrs.lastAlert.info.description}\n\n${wrs.lastAlert.info.potential}\n\n${wrs.lastAlert.info.instruction}`,
-      parse_mode: "Markdown",
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "Buka WRS-BMKG",
-              url: "https://warning.bmkg.go.id",
-            },
-          ],
-        ],
-      },
-    }
-  );
+  await sendWarning(ctx.message.chat.id, wrs.lastAlert.info);
   let text = `*${wrs.lastRealtimeQL.properties.place}*\``;
   text += `\nTanggal   : ${new Date(
     wrs.lastRealtimeQL.properties.time
