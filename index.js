@@ -8,30 +8,37 @@ require("dotenv").config();
 const bot = new grammy.Bot(process.env.BOT_TOKEN);
 const subscriber = [];
 
+function getShakemap(n) {
+  return new Promise(async (res, rej) => {
+    let stream = get(
+      "https://bmkg-content-inatews.storage.googleapis.com/" + n
+    );
+
+    stream.on("error", async (e) => {
+      stream.destroy();
+      res(await getShakemap(n));
+    });
+
+    stream.on("response", (_) => res(stream));
+  });
+}
+
 async function sendWarning(id, msg, t = 3000) {
   try {
-    await bot.api.sendPhoto(
-      id,
-      new grammy.InputFile(
-        get(
-          `https://bmkg-content-inatews.storage.googleapis.com/${msg.shakemap}`
-        )
-      ),
-      {
-        caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`,
-        parse_mode: "Markdown",
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: "Buka WRS-BMKG",
-                url: "https://warning.bmkg.go.id",
-              },
-            ],
+    await bot.api.sendPhoto(id, new grammy.InputFile(await getShakemap()), {
+      caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`,
+      parse_mode: "Markdown",
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Buka WRS-BMKG",
+              url: "https://warning.bmkg.go.id",
+            },
           ],
-        },
-      }
-    );
+        ],
+      },
+    });
   } catch (e) {
     console.error(e);
     setTimeout(async (_) => await sendWarning(msg, id, t + 1000), t);
