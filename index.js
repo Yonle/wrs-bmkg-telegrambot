@@ -3,10 +3,10 @@ const grammy = require("grammy");
 const get = require("miniget");
 const wrs = require("wrs-bmkg")();
 
-wrs.recvWarn = 2;
+wrs.recvWarn = 0;
 require("dotenv").config();
 const bot = new grammy.Bot(process.env.BOT_TOKEN);
-const subscriber = [651345999];
+const subscriber = [];
 
 function getShakemap(n) {
   return new Promise(async (res, rej) => {
