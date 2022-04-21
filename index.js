@@ -3,10 +3,10 @@ const grammy = require("grammy");
 const get = require("miniget");
 const wrs = require("wrs-bmkg")();
 
-wrs.recvWarn = 0;
+wrs.recvWarn = 2;
 require("dotenv").config();
 const bot = new grammy.Bot(process.env.BOT_TOKEN);
-const subscriber = [];
+const subscriber = [651345999];
 
 function getShakemap(n) {
   return new Promise(async (res, rej) => {
@@ -16,7 +16,7 @@ function getShakemap(n) {
 
     stream.on("error", async (e) => {
       stream.destroy();
-      setTimeout(async _ => res(await getShakemap(n)), 3000);
+      setTimeout(async (_) => res(await getShakemap(n)), 3000);
     });
 
     stream.on("response", (_) => res(stream));
@@ -25,20 +25,24 @@ function getShakemap(n) {
 
 async function sendWarning(id, msg, t = 3000) {
   try {
-    await bot.api.sendPhoto(id, new grammy.InputFile(await getShakemap(msg.shakemap)), {
-      caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`,
-      parse_mode: "Markdown",
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "Buka WRS-BMKG",
-              url: "https://warning.bmkg.go.id",
-            },
+    await bot.api.sendPhoto(
+      id,
+      new grammy.InputFile(await getShakemap(msg.shakemap)),
+      {
+        caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`,
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "Buka WRS-BMKG",
+                url: "https://warning.bmkg.go.id",
+              },
+            ],
           ],
-        ],
-      },
-    });
+        },
+      }
+    );
   } catch (e) {
     console.error(e);
     setTimeout(async (_) => await sendWarning(msg, id, t + 1000), t);
@@ -48,6 +52,10 @@ async function sendWarning(id, msg, t = 3000) {
 bot.command("start", async (ctx) => {
   if (!subscriber.includes(ctx.message.chat.id))
     subscriber.push(ctx.message.chat.id);
+  if (!wrs.lastAlert)
+    return ctx.reply(
+      "Halo. Bot baru saja bangun & sedang menerima informasi baru. Mohon coba lagi nanti."
+    );
   await ctx.reply(wrs.lastAlert.info.headline);
   bot.api.sendChatAction(ctx.message.chat.id, "upload_photo");
   await sendWarning(ctx.message.chat.id, wrs.lastAlert.info);
