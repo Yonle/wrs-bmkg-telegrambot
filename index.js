@@ -16,7 +16,7 @@ function getShakemap(n) {
 
     stream.on("error", async (e) => {
       stream.destroy();
-      res(await getShakemap(n));
+      setTimeout(async _ => res(await getShakemap(n)), 3000);
     });
 
     stream.on("response", (_) => res(stream));
@@ -25,7 +25,7 @@ function getShakemap(n) {
 
 async function sendWarning(id, msg, t = 3000) {
   try {
-    await bot.api.sendPhoto(id, new grammy.InputFile(await getShakemap()), {
+    await bot.api.sendPhoto(id, new grammy.InputFile(await getShakemap(msg.shakemap)), {
       caption: `*${msg.subject}*\n\n${msg.description}\n\n${msg.potential}\n\n${msg.instruction}`,
       parse_mode: "Markdown",
       reply_markup: {
@@ -97,6 +97,7 @@ wrs.on("Gempabumi", (msg) => {
   if (wrs.recvWarn !== 2) return wrs.recvWarn++;
   subscriber.forEach(async (id) => {
     await bot.api.sendMessage(id, msg.headline);
+    await sendWarning(id, msg);
   });
 });
 
