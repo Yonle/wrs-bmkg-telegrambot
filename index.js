@@ -70,6 +70,8 @@ bot.command("start", async (ctx) => {
   )} KM\``;
   if (Number(wrs.lastRealtimeQL.properties.mag) >= 5)
     text += "\n\n<!> Peringatan: Gempa berskala M >= 5";
+  else if (Number(wrs.lastRealtimeQL.properties.mag) >= 6)
+    text += "\n\n<!!> Peringatan: Gempa berskala M >= 6";
   else if (Number(wrs.lastRealtimeQL.properties.mag) >= 7)
     text += "\n\n<!!!> Peringatan: Gempa berskala M >= 7";
   let locationMessage = await bot.api.sendVenue(
@@ -116,6 +118,8 @@ wrs.on("realtime", (msg) => {
   text += `\nKedalaman : ${Math.floor(msg.properties.depth)} KM\``;
   if (Number(msg.properties.mag) >= 5)
     text += "\n\n<!> Peringatan: Gempa berskala M >= 5";
+  else if (Number(msg.properties.mag) >= 6)
+    text += "\n\n<!!> Peringatan: Gempa berskala M >= 6";
   else if (Number(msg.properties.mag) >= 7)
     text += "\n\n<!!!> Peringatan: Gempa berskala M >= 7";
 
