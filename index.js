@@ -79,7 +79,7 @@ async function sendNarasi(id, ts, t = 3000) {
     console.error(e);
     setTimeout(async (_) => {
       pendingNarasi.delete(id * ts);
-      await sendWarning(id, ts, t + 1000);
+      await sendNarasi(id, ts, t + 1000);
     }, t);
   }
 }
