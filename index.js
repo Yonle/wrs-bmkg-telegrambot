@@ -1,4 +1,5 @@
 const { inspect } = require("util");
+const turndown = new (require("turndown"))();
 const grammy = require("grammy");
 const get = require("miniget");
 const wrs = require("wrs-bmkg")();
@@ -7,6 +8,7 @@ wrs.recvWarn = 0;
 require("dotenv").config();
 const bot = new grammy.Bot(process.env.BOT_TOKEN);
 const subscriber = [];
+const pendingNarasi = new Set();
 
 function getShakemap(n) {
   return new Promise(async (res, rej) => {
@@ -49,6 +51,39 @@ async function sendWarning(id, msg, t = 3000) {
   }
 }
 
+async function sendNarasi(id, ts, t = 3000) {
+  if (pendingNarasi.has(id * ts)) return;
+  pendingNarasi.add(id * ts);
+  try {
+    let text = await get(`https://bmkg-content-inatews.storage.googleapis.com/${ts}_narasi.txt`).text();
+    bot.api.sendMessage(id, turndown.turndown(text).replace(RegExp("#", "g"), ""), {
+      parse_mode: "Markdown",
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: "InaTEWS-BMKG",
+            url: "https://inatews.bmkg.go.id/"
+          }, {
+            text: "WRS-BMKG",
+            url: "https://warning.bmkg.go.id/"
+          }],
+          [{
+            text: "InaTEWS-BMKG (Telegram)",
+            url: "https://t.me/InaTEWS_BMKG"
+          }]
+        ]
+      }
+    });
+    pendingNarasi.delete(id * ts);
+  } catch (e) {
+    console.error(e);
+    setTimeout(async (_) => {
+      pendingNarasi.delete(id * ts);
+      await sendWarning(id, ts, t + 1000);
+    }, t);
+  }
+}
+
 bot.command("start", async (ctx) => {
   if (!subscriber.includes(ctx.message.chat.id))
     subscriber.push(ctx.message.chat.id);
@@ -59,6 +94,7 @@ bot.command("start", async (ctx) => {
   await ctx.reply(wrs.lastAlert.info.headline);
   bot.api.sendChatAction(ctx.message.chat.id, "upload_photo");
   await sendWarning(ctx.message.chat.id, wrs.lastAlert.info);
+  sendNarasi(ctx.message.chat.id, wrs.lastAlert.info.eventid);
   let text = `*${wrs.lastRealtimeQL.properties.place}*\``;
   text += `\nTanggal   : ${new Date(
     wrs.lastRealtimeQL.properties.time
@@ -77,11 +113,11 @@ bot.command("start", async (ctx) => {
     wrs.lastRealtimeQL.properties.depth
   )} KM\``;
   if (Number(wrs.lastRealtimeQL.properties.mag) >= 5)
-    text += "\n\n<!> Peringatan: Gempa berskala M >= 5";
+    text += "\n\nPeringatan: Gempa berskala M >= 5";
   else if (Number(wrs.lastRealtimeQL.properties.mag) >= 6)
-    text += "\n\n<!!> Peringatan: Gempa berskala M >= 6";
+    text += "\n\nPeringatan: Gempa berskala M >= 6";
   else if (Number(wrs.lastRealtimeQL.properties.mag) >= 7)
-    text += "\n\n<!!!> Peringatan: Gempa berskala M >= 7";
+    text += "\n\nPeringatan: Gempa berskala M >= 7";
   let locationMessage = await bot.api.sendVenue(
     ctx.message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -106,6 +142,7 @@ wrs.on("Gempabumi", (msg) => {
   subscriber.forEach(async (id) => {
     await bot.api.sendMessage(id, msg.headline);
     await sendWarning(id, msg);
+    await sendNarasi(id, msg.eventid);
   });
 });
 
@@ -126,11 +163,11 @@ wrs.on("realtime", (msg) => {
   text += `\nStatus    : ${msg.properties.status}`;
   text += `\nKedalaman : ${Math.floor(msg.properties.depth)} KM\``;
   if (Number(msg.properties.mag) >= 5)
-    text += "\n\n<!> Peringatan: Gempa berskala M >= 5";
+    text += "\n\nPeringatan: Gempa berskala M >= 5";
   else if (Number(msg.properties.mag) >= 6)
-    text += "\n\n<!!> Peringatan: Gempa berskala M >= 6";
+    text += "\n\nPeringatan: Gempa berskala M >= 6";
   else if (Number(msg.properties.mag) >= 7)
-    text += "\n\n<!!!> Peringatan: Gempa berskala M >= 7";
+    text += "\n\nPeringatan: Gempa berskala M >= 7";
 
   subscriber.forEach(async (id) => {
     let locationMessage = await bot.api.sendVenue(
