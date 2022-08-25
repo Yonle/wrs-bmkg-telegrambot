@@ -112,12 +112,12 @@ bot.command("start", async (ctx) => {
   text += `\nKedalaman : ${Math.floor(
     wrs.lastRealtimeQL.properties.depth
   )} KM\``;
-  if (Number(wrs.lastRealtimeQL.properties.mag) >= 5)
-    text += "\n\nPeringatan: Gempa berskala M >= 5";
+  if (Number(wrs.lastRealtimeQL.properties.mag) >= 7)
+    text = "*Peringatan:* Gempa berskala M >= 7\n" + text;
   else if (Number(wrs.lastRealtimeQL.properties.mag) >= 6)
-    text += "\n\nPeringatan: Gempa berskala M >= 6";
-  else if (Number(wrs.lastRealtimeQL.properties.mag) >= 7)
-    text += "\n\nPeringatan: Gempa berskala M >= 7";
+    text = "*Peringatan:* Gempa berskala M >= 6\n" + text;
+  else if (Number(wrs.lastRealtimeQL.properties.mag) >= 5)
+    text += "\n\nPeringatan: Gempa berskala M >= 5";
   let locationMessage = await bot.api.sendVenue(
     ctx.message.chat.id,
     wrs.lastRealtimeQL.geometry.coordinates[1],
@@ -162,12 +162,12 @@ wrs.on("realtime", (msg) => {
   text += `\nFase      : ${msg.properties.fase}`;
   text += `\nStatus    : ${msg.properties.status}`;
   text += `\nKedalaman : ${Math.floor(msg.properties.depth)} KM\``;
-  if (Number(msg.properties.mag) >= 5)
-    text += "\n\nPeringatan: Gempa berskala M >= 5";
+  if (Number(msg.properties.mag) >= 7)
+    text = "*Peringatan:* Gempa berskala M >= 7\n" + text;
   else if (Number(msg.properties.mag) >= 6)
-    text += "\n\nPeringatan: Gempa berskala M >= 6";
-  else if (Number(msg.properties.mag) >= 7)
-    text += "\n\nPeringatan: Gempa berskala M >= 7";
+    text = "*Peringatan:* Gempa berskala M >= 6\n" + text;
+  else if (Number(msg.properties.mag) >= 5)
+    text += "\n\nPeringatan: Gempa berskala M >= 5";
 
   subscriber.forEach(async (id) => {
     let locationMessage = await bot.api.sendVenue(
