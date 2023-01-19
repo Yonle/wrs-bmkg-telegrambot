@@ -192,6 +192,7 @@ wrs.on("realtime", (msg) => {
 
 wrs.on("error", (err) => {
   console.error(err);
+  wrs.stopPolling();
   wrs.startPolling();
 });
 wrs.startPolling();
